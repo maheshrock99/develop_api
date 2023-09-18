@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="19b67c84-5d67-442b-89fc-d40247e9951b" >
+		<http:request-connection host="${Request.Host}" />
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="1dd2b518-84d9-429b-a6c2-89a27cdfc1cf" >
+		<http:request-connection host="${Request.Host}" />
+	</http:request-config>
+	<flow name="implemnetationflowFlow" doc:id="d1d368c5-3064-471a-a6dd-42fb473e0916" >
+		<ee:transform doc:name="Transform Message" doc:id="8f7bfd24-5f74-442f-bf09-1086a7c5227c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"sucess"]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="80e266d1-f8a3-49a3-ba2e-137384968e00" />
+		<round-robin doc:name="Round Robin" doc:id="29a26757-9ac1-4dce-b252-f3ad519d7903" >
+			<route >
+				<ee:transform doc:name="Transform Message" doc:id="2d388889-304e-4871-8d05-6024dc1a9716">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+---
+message: payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<http:request method="POST" doc:name="Request" doc:id="12b3f0fc-6876-463b-a1bc-aa0089f3d14c" config-ref="HTTP_Request_configuration" path="${Request.Path}"/>
+				<logger level="INFO" doc:name="Logger" doc:id="62c0c65e-268b-4c4b-9a00-94fa91496809" message="target system was satisfied this flow #[payload]"/>
+			</route>
+			<route >
+				<ee:transform doc:name="Transform Message" doc:id="34473453-0d2b-4f99-9f24-7b27158f058c">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<http:request method="POST" doc:name="Request" doc:id="04c965e5-91ad-4775-abad-97c63dc29c8c" config-ref="HTTP_Request_configuration1" path="${Request.Path}"/>
+				<logger level="INFO" doc:name="Logger" doc:id="55c7924f-08aa-436f-85d1-e9298e6aceb4" message="target system was satisfied #[payload]"/>
+			</route>
+			<route >
+				<ee:transform doc:name="Transform Message" doc:id="dc06bb0c-eca1-4020-8d6b-70a8af5580a6">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	therd  : payload
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="Logger" doc:id="738ba0ca-b6ca-4228-8a82-d0165976ff44" message="sucessfully sending target system #[payload]"/>
+				<logger level="INFO" doc:name="Logger" doc:id="de935417-7fe8-4fd1-b58e-8a95a3ae6f1b" message="Condition was sucessfully sending target system #[payload]"/>
+			</route>
+			<route >
+				<logger level="INFO" doc:name="Logger" doc:id="8b2b2c4d-ec4b-4cc6-b0e3-663d9203ddd1" message="sending to target system payload #[payload]"/>
+			</route>
+		</round-robin>
+		<ee:transform doc:name="Transform Message" doc:id="955957bc-cb62-4776-9683-697891d9d3dc" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="cf758a34-0534-4370-abba-30b27f71721a" message="#[payload]"/>
+	</flow>
+</mule>
