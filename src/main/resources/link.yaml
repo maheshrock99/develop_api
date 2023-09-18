@@ -1,0 +1,12 @@
+#listner properties:
+Listener:
+  Host : "0.0.0.0"
+  Port : "8081"
+  Path : "/api/*"
+  
+#Request Properties:
+Request:
+  Host : "targeturl-xml.us-e2.cloudhub.io"
+  Path : "/api/order"
+  
+ 
